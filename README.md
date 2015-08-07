@@ -1,4 +1,4 @@
-# simple-cmd
+# Indivudual
 simple-cmd implements command-line flag parsing with simple and intuitive style.
 The code is stole from the revel/cmd package.
 
@@ -52,5 +52,18 @@ func init () {
 
 func Build (args []string) { ... }
 ```
+
+* Usage template file.
+simply edit the template file in the template.go
+```
+//...
+var AppName string = "simple-cmd"
+const usageTemplate = `Usage: simple-cmd command [argument]
+...
+....
+.....
+`
+```
+
 
 	
