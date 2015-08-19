@@ -1,26 +1,18 @@
-# Indivudual
-simple-cmd implements command-line flag parsing with simple and intuitive style.
-The code is stole from the revel/cmd package.
+# Docflag
+Docflag implements command-line flag parsing with simple and intuitive style.
+The code is inspired by the revel/cmd package.
+
+```
+import "github.com/Zypeh/docflag"
+func main() {
+	docflag.Parse()
+}
+```
 
 It offers:
 
-* simple flag with a short description
-```
-./simple-cmd
------
-- simple-cmd
------
-Usage: simple-cmd command [arguments]
-
-The commands are:
-
-    test	Simple Example - Echo function
-
-Use "simple-cmd help [command]" for more information.
-```
-
 * both short and long description
-use "simple-cmd help [command]" for more information
+use "help [command]" for more information
 here is how we include our command's description
 ```
 var cmdTest = &Command{
@@ -28,7 +20,7 @@ var cmdTest = &Command{
 	Short "Simple Example - Echo function",
 	Long: `
 This is the long description to be shown when you help [command].
-`,
+`
 }
 ```
 
@@ -44,7 +36,7 @@ var commands = []*Command {
 ```
 and start writing your function under the command.
 ```
-package main
+package docflag
 
 func init () {
 	cmdBuild.Run = build
@@ -54,15 +46,15 @@ func Build (args []string) { ... }
 ```
 
 * Usage template file.
-simply edit the template file in the template.go
+simply edit the template file in the App.cfg
 ```
-//...
-var AppName string = "simple-cmd"
-const usageTemplate = `Usage: simple-cmd command [argument]
-...
-....
-.....
-`
+[App]
+AppName = "Echo-go"
+Header = "-----[[ Simple Echo ]]-----"
+
+[Template]
+usageTemplate = "Usage: echo-go command [arguments]"
+// SNIP...
 ```
 
 
