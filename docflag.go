@@ -1,9 +1,8 @@
-package main
+package docflag
 
 import (
 	"flag"
 	"fmt"
-	"github.com/agtorre/gocolorize"
 	"io"
 	"math/rand"
 	"os"
@@ -11,10 +10,29 @@ import (
 	"strings"
 	"text/template"
 	"time"
+	
+	"github.com/agtorre/gocolorize"
+	"gopkg.in/gcfg.v1"
 )
 
 // Use wrapper to differentiate logged panics from unexpected ones.
-type LoggedError struct{ error }
+type LoggedError struct { error }
+
+// Read from configuration file
+type Config struct {
+
+	// Apps Configurations
+	App struct {
+		AppName string
+		Header string
+	}
+
+	// Template string
+	Template struct {
+		usageTemplate string
+		helpTemplate string
+	}
+}
 
 // Steal from the revel/cmd
 type Command struct {
@@ -36,11 +54,20 @@ var commands = []*Command {
 	cmdTest,
 }
 
-func main () {
+var AppCfg Config
+
+func Parse () {
 	if runtime.GOOS == "windows" {
 		gocolorize.SetPlain (true)
 	}
-	fmt.Fprintf (os.Stdout, gocolorize.NewColor ("Blue").Paint (header))
+
+	var err = gcfg.ReadFileInto (&AppCfg, "App.cfg")
+	if err != nil {
+		errorf ("Missing App.cfg")
+		os.Exit(1)
+	}
+	
+	fmt.Fprintf (os.Stdout, gocolorize.NewColor ("Blue").Paint (AppCfg.App.Header))
 	flag.Usage = func () { usage (1) }
 	flag.Parse ()
 	args := flag.Args ()
@@ -52,7 +79,7 @@ func main () {
 		if len (args) > 1 {
 			for _, cmd := range commands {
 				if cmd.Name () == args [1] {
-					tmpl (os.Stdout, helpTemplate, cmd)
+					tmpl (os.Stdout, AppCfg.Template.helpTemplate, cmd)
 					return
 				}
 			}
@@ -92,7 +119,8 @@ func errorf (format string, args ...interface{}) {
 }
 
 func usage (exitCode int) {
-	tmpl (os.Stderr, usageTemplate, commands)
+	gcfg.ReadFileInto (&AppCfg, "App.cfg")
+	tmpl (os.Stderr, AppCfg.Template.usageTemplate, commands)
 	os.Exit (exitCode)
 }
 
